@@ -1,0 +1,12 @@
+Changes
+lib/SQLite/VirtualTable.pm
+lib/SQLite/VirtualTable/CSV.pm
+lib/SQLite/VirtualTable/Util.pm
+Makefile.PL
+MANIFEST
+perlvtab.c
+ppport.h
+README
+sample/test.pl
+t/SQLite-VirtualTable.t
+t/pods.t
