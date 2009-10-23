@@ -336,7 +336,7 @@ Salvador FandiE<ntilde>o (sfandino@yahoo.com).
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Qindel Formacion y Servicios, S. L.
+Copyright (C) 2006, 2009 by Qindel Formacion y Servicios, S. L.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
