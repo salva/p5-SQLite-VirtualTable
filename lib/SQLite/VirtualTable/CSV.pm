@@ -127,7 +127,7 @@ sub ROWID {
 }
 
 sub CLOSE {
-    warn "CLOSE";
+    # warn "CLOSE";
     my ($self, $cur) = @_;
     @$cur = ();
 }
