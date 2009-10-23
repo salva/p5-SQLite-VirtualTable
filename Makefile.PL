@@ -14,18 +14,23 @@ my $sqlite_source;
     }
 } @ARGV;
 
-defined $sqlite_source
-    or die "Usage: perl Makefile.PL SQLITE_SOURCE=/path/to/sqlite/source ...\n";
+my $INC = '';
+if (defined $sqlite_source) {
+    -f $sqlite_source . "/src/sqlite3ext.h"
+	or die "SQLite source not found on the path given '$sqlite_source'\n";
+    $INC =  "-I$sqlite_source -I$sqlite_source/src";
+}
+else {
+    warn "Assuming SQLite development files are installed in the standard places...\n";
+}
 
--f $sqlite_source . "/src/sqlite3ext.h"
-    or die "SQLite source not found on the path given\n";
 
 WriteMakefile( NAME => 'SQLite::VirtualTable',
                VERSION_FROM => 'lib/SQLite/VirtualTable.pm',
                PREREQ_PM => {},
                ABSTRACT_FROM => 'lib/SQLite/VirtualTable.pm',
                AUTHOR => 'Salvador Fandino <sfandino@yahoo.com>',
-               INC => "-I$sqlite_source -I$sqlite_source/src",
+               INC => $INC,
                OBJECT => 'perlvtab.o',
                OPTIMIZE => '-g3 -O0',
                dynamic_lib => { OTHERLDFLAGS => '`$(PERL) -MExtUtils::Embed -e ldopts`' }
