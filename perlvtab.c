@@ -51,8 +51,9 @@ static char *vtm_name[] = { "CREATE",
 static int
 perlCreateOrConnect(sqlite3 *db,
                     void *pAux,
-                    int argc, char **argv,
-                    sqlite3_vtab **ppVtab,
+                    int argc, const char *const *argv,
+                    sqlite3_vtab **ppVTab,
+		    char **pzErr,
                     int method) {
     my_dTHX(pAux);
     dSP;
@@ -110,6 +111,8 @@ perlCreateOrConnect(sqlite3 *db,
                   sv_reftype(SvRV(vtabsv), 1),
                   SvTRUE(ERRSV) ? SvPV_nolen(ERRSV) : "method returned undef");
         rc = SQLITE_ERROR;
+	if (SvTRUE(ERRSV))
+	    *pzErr = sqlite3_mprintf("%s", SvPV_nolen(ERRSV));
         goto cleanup;
     }
 
@@ -125,7 +128,7 @@ perlCreateOrConnect(sqlite3 *db,
 #endif
 
 cleanup:
-    *ppVtab = (sqlite3_vtab *) vtab;
+    *ppVTab = (sqlite3_vtab *) vtab;
 
     FREETMPS;
     LEAVE;
@@ -136,17 +139,19 @@ cleanup:
 static int
 perlCreate(sqlite3 *db,
            void *pAux,
-           int argc, char **argv,
-           sqlite3_vtab **ppVtab) {
-    return perlCreateOrConnect(db, pAux, argc, argv, ppVtab, VTM_CREATE);
+           int argc, const char *const *argv,
+           sqlite3_vtab **ppVTab,
+	   char **pzErr) {
+    return perlCreateOrConnect(db, pAux, argc, argv, ppVTab, pzErr, VTM_CREATE);
 }
 
 static int
 perlConnect(sqlite3 *db,
            void *pAux,
-           int argc, char **argv,
-           sqlite3_vtab **ppVtab) {
-    return perlCreateOrConnect(db, pAux, argc, argv, ppVtab, VTM_CONNECT);
+           int argc, const char *const *argv,
+           sqlite3_vtab **ppVTab,
+	   char **pzErr) {
+    return perlCreateOrConnect(db, pAux, argc, argv, ppVTab, pzErr, VTM_CONNECT);
 }
 
 static int
@@ -370,7 +375,7 @@ int perlBestIndex(sqlite3_vtab *vtab, sqlite3_index_info *ixinfo) {
     AV *ctrain;
     int count;
     int i;
-    int len;
+    STRLEN len;
     char *str;
     int rc = SQLITE_OK;
 
@@ -686,8 +691,8 @@ perlRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *rowid) {
 
     PUTBACK;
     count = call_method("ROWID", G_SCALAR|G_EVAL);
-    ax = (SP - PL_stack_base) + 1;
     SPAGAIN;
+    ax = (SP - PL_stack_base) + 1;
     SP -= count;
     PUTBACK;
     rowidsv = ST(0);
@@ -779,12 +784,14 @@ sqlite3_module perlModule = {
     perlSync,
     perlCommit,
     perlRollback,
+    NULL, /* perlFindFunction - not implemented yet! */
+    perlRename,
 };
 
 static char *argv[] = { "perlvtab",
-                        "-e",
-                        "require SQLite::VirtualTable;\n",
-                        NULL };
+			"-e",
+			"require SQLite::VirtualTable;\n",
+			NULL };
 
 EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
 
@@ -798,9 +805,12 @@ int sqlite3_extension_init(sqlite3 *db, char **pzErrMsg,
                            const sqlite3_api_routines *pApi) {
 
     PerlInterpreter *my_perl = perl_alloc();
-    PERL_SYS_INIT3(3, argv, NULL);
+    int ac = 3;
+    char **av = argv;
+    char **env = environ;
+    PERL_SYS_INIT3(&ac, &av, &env);
     perl_construct(my_perl);
-    perl_parse(my_perl, xs_init, 3, argv, environ);
+    perl_parse(my_perl, xs_init, ac, av, env);
     perl_run(my_perl);
 
     SQLITE_EXTENSION_INIT2(pApi)
