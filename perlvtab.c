@@ -766,12 +766,12 @@ cleanup:
 }
 
 static int
-perlRename(sqlite_vtab *vtab, const char *name) {
+perlRename(sqlite3_vtab *vtab, const char *name) {
      my_dTHX(((perl_vtab*)vtab)->perl);
     dSP;
     I32 ax;
     SV *vtabsv = ((perl_vtab*)vtab)->sv;
-
+    int count;
     int rc = SQLITE_OK;
     ENTER;
     SAVETMPS;
