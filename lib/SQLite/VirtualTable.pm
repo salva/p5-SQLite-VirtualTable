@@ -317,6 +317,8 @@ adds support for CSV files.
 
 =head1 BUGS
 
+Method xFindFunction is not supported.
+
 This is alpha software based on an experimental feature of SQLite,
 lots of bugs are likely to appear.
 
