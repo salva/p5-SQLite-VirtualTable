@@ -1,4 +1,13 @@
 Revision history for Perl extension SQLite::VirtualTable.
+
+0.05  Oct 23, 2009
+        - bug in ROWID callback (bug report by Brian Duggan)
+  	- add compatibility with older perls via ppport.h (bug report
+          and patch by Mark Kidwell)
+	- update to use latest SQLite3 virtual table API
+	- minor doc improvements
+	- use XPUSH instead of PUSH
+
 0.04  Jul 13, 2006
         - bug on error reports corrected
         - better docs
