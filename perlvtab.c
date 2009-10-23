@@ -765,6 +765,42 @@ cleanup:
     return rc;
 }
 
+static int
+perlRename(sqlite_vtab *vtab, const char *name) {
+     my_dTHX(((perl_vtab*)vtab)->perl);
+    dSP;
+    I32 ax;
+    SV *vtabsv = ((perl_vtab*)vtab)->sv;
+
+    int rc = SQLITE_OK;
+    ENTER;
+    SAVETMPS;
+    PUSHMARK(SP);
+    PUSHs(vtabsv);
+    PUSHs(sv_2mortal(newSVpv(name, 0)));
+    PUTBACK;
+    count = call_method("RENAME", G_SCALAR|G_EVAL);
+    SPAGAIN;
+    SP -= count;
+    ax = (SP - PL_stack_base) + 1;
+    PUTBACK;
+
+    if (!count || SvTRUE(ERRSV)) {
+        Perl_warn(aTHX_ "%s::RENAME method failed: %s\n",
+                  sv_reftype(SvRV(vtabsv), 1),
+                  SvPV_nolen(ERRSV));
+        rc = SQLITE_ERROR;
+        goto cleanup;
+    }    
+    rc = (SvTRUE(ST(0)) ? SQLITE_OK : SQLITE_ERROR);
+
+cleanup:
+    FREETMPS;
+    LEAVE;
+    return rc;
+}
+
+
 sqlite3_module perlModule = {
     0,
     perlCreate,
