@@ -37,6 +37,8 @@ sub _do_nothing {}
 *COMMIT_TRANSACTION = \&_do_nothing;
 *ROLLBACK_TRANSACTION = \&_do_nothing;
 
+sub RENAME { 1 }
+
 1;
 __END__
 
@@ -226,14 +228,25 @@ These methods are called on transaction related events.
 
 The default implementations from C<SQLite::VirtualTable> do nothing.
 
+=item $vt->RENAME($name)
+
+Notification that the table will be given a new name. If a false value
+is returned, the rename operation will be cancled.
+
+Has a default implementation that returns always true.
+
 =back
 
 =head1 INSTALLATION
 
-To compile this module, you need to pass the location of the SQLite
-source code to the Makefile.PL script:
+Before compiling you will have to ensure that the development files
+for sqlite3 and the perl library are installed. For instance, in
+Debian (and derivates as Ubuntu), you will have to install
+C<libsqlite3-dev> and C<libperl-dev>.
 
-  $ perl Makefile.PL SQLITE_SOURCE=/path/to/sqlite/source
+Compile the module as usual:
+
+  $ perl Makefile.PL
   $ make
   $ make test
 
@@ -241,11 +254,11 @@ Then, (maybe as root) install the Perl package:
 
   $ make install
 
-Finally to make the SQLite dynamic extension (C<perlvtab.so>, though
-the name extension can be different depending on your OS) available to
-any SQLite application, you may want to copy the library file
-C<blib/arch/auto/SQLite/VirtualTable/perlvtab.so> to some place where
-your OS could find it, for instance C</usr/local/lib>.
+And finally to make the SQLite dynamic extension (C<perlvtab.so>,
+though the name extension can be different depending on your OS)
+available to any SQLite application, you may want to copy the library
+file C<blib/arch/auto/SQLite/VirtualTable/perlvtab.so> to some place
+where your OS could find it, for instance C</usr/local/lib>.
 
 Alternatively, you could use C<LD_LIBRARY_PATH> to make your OS look
 for it at a different place. Read the documentation for your OS
