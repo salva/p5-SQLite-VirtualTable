@@ -170,7 +170,7 @@ perlSimpleVtabMethod(sqlite3_vtab *vtab, int method) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
+    XPUSHs(vtabsv);
     PUTBACK;
     count = call_method(vtm_name[method], G_VOID|G_EVAL);
     SPAGAIN;
@@ -207,7 +207,7 @@ perlDropOrDisconnect(sqlite3_vtab *vtab, int method) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
+    XPUSHs(vtabsv);
     PUTBACK;
     count = call_method(vtm_name[method], G_VOID|G_EVAL);
     SPAGAIN;
@@ -278,7 +278,7 @@ perlOpen(sqlite3_vtab *vtab, sqlite3_vtab_cursor **ppCursor) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
+    XPUSHs(vtabsv);
     PUTBACK;
     count = call_method("OPEN", G_SCALAR|G_EVAL);
     SPAGAIN;
@@ -323,8 +323,8 @@ perlClose(sqlite3_vtab_cursor *cur) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(cursv);
+    XPUSHs(vtabsv);
+    XPUSHs(cursv);
 
     PUTBACK;
     count = call_method("CLOSE", G_VOID|G_EVAL);
@@ -387,10 +387,10 @@ int perlBestIndex(sqlite3_vtab *vtab, sqlite3_index_info *ixinfo) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
+    XPUSHs(vtabsv);
 
     ctrain = newAV();
-    PUSHs(sv_2mortal(newRV_noinc((SV*)ctrain)));
+    XPUSHs(sv_2mortal(newRV_noinc((SV*)ctrain)));
 
     for (i = 0; i < ixinfo->nConstraint; i++) {
         HV *hv = newHV();
@@ -401,7 +401,7 @@ int perlBestIndex(sqlite3_vtab *vtab, sqlite3_index_info *ixinfo) {
     }
 
     av = newAV();
-    PUSHs(sv_2mortal(newRV_noinc((SV*)av)));
+    XPUSHs(sv_2mortal(newRV_noinc((SV*)av)));
 
     for (i = 0; i < ixinfo->nOrderBy; i++) {
         HV *hv = newHV();
@@ -480,8 +480,8 @@ perlEof(sqlite3_vtab_cursor* cur) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(cursv);
+    XPUSHs(vtabsv);
+    XPUSHs(cursv);
 
     PUTBACK;
     count = call_method("EOF", G_SCALAR|G_EVAL);
@@ -521,8 +521,8 @@ perlNext(sqlite3_vtab_cursor* cur) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(cursv);
+    XPUSHs(vtabsv);
+    XPUSHs(cursv);
     PUTBACK;
     count = call_method("NEXT", G_SCALAR|G_EVAL);
     SPAGAIN;
@@ -556,9 +556,9 @@ perlColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int n) {
     SAVETMPS;
 
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(cursv);
-    PUSHs(sv_2mortal(newSViv(n)));
+    XPUSHs(vtabsv);
+    XPUSHs(cursv);
+    XPUSHs(sv_2mortal(newSViv(n)));
     PUTBACK;
     count = call_method("COLUMN", G_SCALAR|G_EVAL);
     SPAGAIN;
@@ -649,14 +649,14 @@ perlFilter(sqlite3_vtab_cursor *cur,
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(cursv);
-    PUSHs(sv_2mortal(newSViv(idxNum)));
+    XPUSHs(vtabsv);
+    XPUSHs(cursv);
+    XPUSHs(sv_2mortal(newSViv(idxNum)));
     tmp = sv_2mortal(newSVpv(idxStr, 0));
     SvUTF8_on(tmp);
-    PUSHs(tmp);
+    XPUSHs(tmp);
     for (i = 0; i < argc; i++)
-        PUSHs(sv_2mortal(newSVsqlite3_value(aTHX_ argv[i])));
+        XPUSHs(sv_2mortal(newSVsqlite3_value(aTHX_ argv[i])));
     PUTBACK;
     count = call_method("FILTER", G_VOID|G_EVAL);
     SPAGAIN;
@@ -690,8 +690,8 @@ perlRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *rowid) {
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(cursv);
+    XPUSHs(vtabsv);
+    XPUSHs(cursv);
 
     PUTBACK;
     count = call_method("ROWID", G_SCALAR|G_EVAL);
@@ -736,9 +736,9 @@ perlUpdate(sqlite3_vtab *vtab, int argc, sqlite3_value **argv, sqlite_int64 *row
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-    PUSHs(vtabsv);
+    XPUSHs(vtabsv);
     for (i = 0; i < argc; i++)
-        PUSHs(sv_2mortal(newSVsqlite3_value(aTHX_ argv[i])));
+        XPUSHs(sv_2mortal(newSVsqlite3_value(aTHX_ argv[i])));
     PUTBACK;
     count = call_method("UPDATE", G_SCALAR|G_EVAL);
     SPAGAIN;
@@ -780,8 +780,8 @@ perlRename(sqlite3_vtab *vtab, const char *name) {
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-    PUSHs(vtabsv);
-    PUSHs(sv_2mortal(newSVpv(name, 0)));
+    XPUSHs(vtabsv);
+    XPUSHs(sv_2mortal(newSVpv(name, 0)));
     PUTBACK;
     count = call_method("RENAME", G_SCALAR|G_EVAL);
     SPAGAIN;
