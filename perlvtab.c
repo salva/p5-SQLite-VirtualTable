@@ -4,6 +4,10 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#define NEED_newRV_noinc
+#define NEED_sv_2pv_nolen
+#include "ppport.h" 
+
 #include <sqlite3ext.h>
 SQLITE_EXTENSION_INIT1
 
@@ -802,7 +806,7 @@ cleanup:
 
 
 sqlite3_module perlModule = {
-    0,
+    1,
     perlCreate,
     perlConnect,
     perlBestIndex,
