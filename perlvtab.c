@@ -696,8 +696,8 @@ perlRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *rowid) {
     PUTBACK;
     count = call_method("ROWID", G_SCALAR|G_EVAL);
     SPAGAIN;
-    ax = (SP - PL_stack_base) + 1;
     SP -= count;
+    ax = (SP - PL_stack_base) + 1;
     PUTBACK;
     rowidsv = ST(0);
     if (!count || SvTRUE(ERRSV) || !SvOK(rowidsv)) {

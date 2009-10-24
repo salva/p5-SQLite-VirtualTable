@@ -1,5 +1,9 @@
 Revision history for Perl extension SQLite::VirtualTable.
 
+0.06  Oct 24, 2009
+        - bug in ROWID callback again (bug report and patch by Brian
+          Duggan)
+
 0.05  Oct 23, 2009
         - bug in ROWID callback (bug report by Brian Duggan)
   	- add compatibility with older perls via ppport.h (bug report
