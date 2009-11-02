@@ -60,7 +60,6 @@ remove quotes and resolve escaped characters from the argument.
 
 Salvador FandiE<ntilde>o (sfandino@yahoo.com).
 
-
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (C) 2006 by Qindel Formacion y Servicios, S. L.
