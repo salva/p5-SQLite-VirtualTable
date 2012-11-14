@@ -18,6 +18,10 @@ SQLITE_EXTENSION_INIT1
 #  define my_dTHX(a) dNOOP
 #endif
 
+#ifdef __APPLE__
+extern char **environ;
+#endif
+
 typedef struct _perl_vtab {
     sqlite3_vtab base;
     SV *sv;
