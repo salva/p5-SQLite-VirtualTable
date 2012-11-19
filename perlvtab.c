@@ -851,17 +851,14 @@ xs_init(pTHX) {
 int sqlite3_extension_init(sqlite3 *db, char **pzErrMsg, 
                            const sqlite3_api_routines *pApi) {
 
-    PerlInterpreter *my_perl = Perl_get_context();
-    if (my_perl == NULL) {
-      my_perl = perl_alloc();
-      int ac = 3;
-      char **av = argv;
-      char **env = environ;
-      PERL_SYS_INIT3(&ac, &av, &env);
-      perl_construct(my_perl);
-      perl_parse(my_perl, xs_init, ac, av, env);
-      perl_run(my_perl);
-    }
+    PerlInterpreter *my_perl = perl_alloc();
+    int ac = 3;
+    char **av = argv;
+    char **env = environ;
+    PERL_SYS_INIT3(&ac, &av, &env);
+    perl_construct(my_perl);
+    perl_parse(my_perl, xs_init, ac, av, env);
+    perl_run(my_perl);
 
     SQLITE_EXTENSION_INIT2(pApi)
 
