@@ -1,6 +1,6 @@
 package SQLite::VirtualTable;
 
-our $VERSION = '0.08';
+our $VERSION = '0.07';
 
 use strict;
 use warnings;
