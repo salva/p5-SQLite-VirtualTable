@@ -299,6 +299,15 @@ desired virtual table functionality.
 After the table has been created, it can be used as any regular table
 from SQL.
 
+=head1 USAGE FROM DBD::SQLite
+
+SQLite::VirtualTable can also be used within perl scripts using DBD::SQLite.
+Using SQLite::VirtualTable with DBD::SQLite requires using the alternate entry
+point function C<dbd_sqlite_init_vtab_extension()>. Here is the syntax:
+
+  $dbh->sqlite_enable_load_extension(1);
+  $dbh->sqlite_load_extension('perlvtab.so','dbd_sqlite_init_vtab_extension');
+
 =head1 SEE ALSO
 
 SQLite website L<http://www.sqlite.org/>, including docs
