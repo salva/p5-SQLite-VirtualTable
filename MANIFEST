@@ -5,6 +5,7 @@ lib/SQLite/VirtualTable/Util.pm
 Makefile.PL
 MANIFEST
 perlvtab.c
+perlvtab.h
 ppport.h
 README
 sample/test.pl
